@@ -1,0 +1,166 @@
+---
+title: "A Toolbox of Machine Learning Software to Support Microbiome Analysis"
+---
+
+*Frontiers in Microbiology* 14, 1250806
+
+Marcos Zambrano, L.J., López Molina, V.M., Bakir-Gungor, B.\*, Frohme, M.\*, Karaduzovic-Hadziabdic, K.\*, Klammsteiner, T.\*, Ibrahimi, E.\*, Lahti, L.\*, Loncar-Turukalo, T.\*, Dhamo, X.\*, Simeon, A.\*, Nechyporenko, A.\*, Pio, G.\*, Przymus, P.\*, Sampri, A.\*, Trajkovik, V.T.\*, Aasmets, O., Araujo, R., Anagnostopoulos, I., Aydemir, O., Berland, M., de la Luz Calle, M., Ceci, M., Duman, H., Gundogdu, A., Havulinna, A.S., Kaka Bra, K.H.N., Kalluci, E., Karav, S., Lode, D., Lopes, M.B., May, P., Nap, B., Nedyalkova, M., Paciência, I., Pasic, L., Pujolassos, M., Shigdel, R., Susin, A., Thiele, I., Truic?, C.-O., Wilmes, P., Yilmaz, E., Yousef, M., Claesson, M.J., Truu, J., De Santa Pau, E.C.
+
+\**equal contribution*
+
+Published on XX.11.2023  
+DOI: [https://doi.org/10.3389/fmicb.2023.1250806](https://doi.org/10.3389/fmicb.2023.1250806)
+
+**Supplementary Table 1**: Summary of the most commonly used ML software for microbiome data analysis including the applicability (one application or more), availability of source code, last version, number of citations based on the Scopus database (this gives an idea about the level of usage), type of tool (level of deployment) and availability
+(public/commercial) for all the software and tools included. Each publication has been associated with the URL (pointed in the text) to the software described therein.
+
+
+<br>
+
+```{r message=F, warning=F, echo=F}
+library(tidyverse)
+library(readxl)
+library(reactable)
+library(htmltools)
+library(reactablefmtr)
+
+
+dat <- read_xlsx("software.xlsx")
+
+
+row_details <- function(index) {
+  publication <- dat[index, ]
+  repository <- unlist(strsplit(gsub(",", " , ", publication$Repository, perl = TRUE), "[ \n]"))
+  
+  publication_field <- function(name, ...) {
+    if (any(is.na(...))) NULL
+    else tagList(div(class = "detail-label", name), ...)
+  }
+  
+  detail <- div(
+    class = "publication-detail",
+    div(class = "detail-title", publication$Title),
+    div(class = "detail-authors", publication$Authors),
+    #publication_field("Abstract", publication$Abstract),
+    div(class = "detail-abstract", publication$Abstract),
+    div("Repository: ", class = "detail-repository", lapply(repository, function(repository) {
+      if (grepl("https?://", repository)) tags$a(href = repository, repository)
+      else if (identical(repository, ",")) ", "
+      else repository
+    })),
+  )
+  detail
+}
+
+
+tools <- htmltools::browsable(
+  tagList(
+    div(
+      div(tags$label("Analysis", `for` = "analysis-filter")),
+      tags$select(
+        id = "analysis-filter",
+        onchange = "Reactable.setFilter('publ-filter-table', 'Analysis_type', this.value)",
+        tags$option("All", value = ""),
+        lapply(unique(dat$Analysis_type), tags$option)
+      ),
+    ),
+    div(
+      div(tags$label("Data", `for` = "data-filter")),
+      tags$select(
+        id = "data-filter",
+        onchange = "Reactable.setFilter('publ-filter-table', 'Data_type', this.value)",
+        tags$option("All", value = ""),
+        lapply(unique(dat$Data_type), tags$option)
+      ),
+    ),
+    div(
+      div(tags$label("Method", `for` = "method-filter")),
+      tags$select(
+        id = "method-filter",
+        onchange = "Reactable.setFilter('publ-filter-table', 'Method_type', this.value)",
+        tags$option("All", value = ""),
+        lapply(unique(dat$Method_type), tags$option)
+      ),
+    ),
+    
+    tags$hr("aria-hidden" = "false"),
+
+  reactable(
+    dat,
+    defaultPageSize = 15, 
+    striped = T,
+    columns = list(
+      Tool = colDef(name = 'Tool',
+                    maxWidth = 150),
+      Analysis_type = colDef(name = 'Analysis',
+                             maxWidth = 120),
+      Data_type = colDef(name = 'Data',
+                         maxWidth = 200),
+      Method_type = colDef(name = 'Method',
+                            maxWidth = 180),
+      Year = colDef(name = 'Year', 
+                    maxWidth = 70),
+      DOI = colDef(minWidth = 190,
+                   cell = function(value) {
+        htmltools::tags$a(href = paste0("https://", value), target = "_blank", value)
+      }),
+      Abstract = colDef(show = F),
+      Repository = colDef(show = F),
+      Authors = colDef(show = F),
+      Title = colDef(show = F)
+    ), 
+    searchable = TRUE, 
+    showPageSizeOptions = TRUE, 
+    borderless = TRUE, 
+    highlight = TRUE,
+    compact = TRUE, 
+    onClick = "expand",
+    details = row_details,
+    #theme = reactableTheme(cellPadding = "8px 12px"),
+    theme = clean(),
+    wrap = T,
+    elementId = "publ-filter-table"
+    )
+  )
+)
+
+tools
+```
+
+
+```{css, echo=F}
+.cran-packages {
+  font-family: Nunito, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.publication-detail {
+  padding: 24px;
+  box-shadow: inset 0 1px 3px #dbdbdb;
+  background: hsl(213, 20%, 99%);
+}
+
+.detail-label {
+  margin: 1.25rem 0 0.25rem;
+  font-size: 1.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.detail-authors {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.detail-abstract {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.detail-title {
+  margin-left: 0rem;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+}
+```
