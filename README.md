@@ -8,3 +8,8 @@ Marcos Zambrano, L.J., López Molina, V.M., Bakir-Gungor, B.\*, Frohme, M.\*, Ka
 
 Published on XX.11.2023  
 DOI: [https://doi.org/10.3389/fmicb.2023.1250806](https://doi.org/10.3389/fmicb.2023.1250806)
+
+**Supplementary Table 1**: Summary of the most commonly used ML software for microbiome data analysis including the applicability (one application or more), availability of source code, last version, number of citations based on the Scopus database (this gives an idea about the level of usage), type of tool (level of deployment) and availability
+(public/commercial) for all the software and tools included. Each publication has been associated with the URL (pointed in the text) to the software described therein.
+
+Access the table: https://tklammsteiner.github.io/Toolbox-ML-software/
