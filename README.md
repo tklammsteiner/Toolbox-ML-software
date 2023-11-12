@@ -1,4 +1,4 @@
-#  A Toolbox of Machine Learning Software to Support Microbiome Analysis 
+#  A Toolbox of Machine Learning Software to Support Microbiome Analysis
 
 *Frontiers in Microbiology* 14, 1250806
 
